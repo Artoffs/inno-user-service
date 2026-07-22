@@ -19,4 +19,6 @@ public interface UserDao extends JpaRepository<User, Long>,
     @Query("UPDATE User u SET u.active = false WHERE u.id = :id")
     int deactivateUser(@Param("id") Long id);
 
+    boolean existsByEmail(String email);
+
 }

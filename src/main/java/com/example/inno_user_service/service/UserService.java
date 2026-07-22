@@ -40,9 +40,15 @@ public class UserService {
         User user = findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
 
+        if (!user.getEmail().equals(request.getEmail())) {
+            if (userDao.existsByEmail(request.getEmail())) {
+                throw new RuntimeException("Ты лох");
+            }
+            user.setEmail(request.getEmail());
+        }
+
         user.setName(request.getName());
         user.setSurname(request.getSurname());
-        user.setEmail(request.getEmail());
         user.setBirthDate(request.getBirthDate());
 
         return mapper.toResponse(user);
