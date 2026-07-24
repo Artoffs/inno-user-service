@@ -2,6 +2,7 @@ package com.example.inno_user_service.exceptions.handler;
 
 
 import com.example.inno_user_service.exceptions.ErrorResponse;
+import com.example.inno_user_service.exceptions.MaxCardAmountException;
 import com.example.inno_user_service.exceptions.ResourceNotFoundException;
 import com.example.inno_user_service.exceptions.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -41,5 +42,11 @@ public class GlobalExceptionHandler {
                 errors
         );
         return validationError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handler(MaxCardAmountException exception) {
+        return new ErrorResponse(exception.getMessage());
     }
 }

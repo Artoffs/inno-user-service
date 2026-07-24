@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PaymentCardDao extends JpaRepository<PaymentCard, Long>,
-        JpaSpecificationExecutor<PaymentCardDao> {
+        JpaSpecificationExecutor<PaymentCard> {
 
     List<PaymentCard> findByUserId(Long userId);
 

@@ -21,5 +21,7 @@ public class UserResponse {
 
     private String email;
 
+    private Boolean isActive;
+
     private LocalDateTime createdAt;
 }

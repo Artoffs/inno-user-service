@@ -1,0 +1,57 @@
+package com.example.inno_user_service.controllers;
+
+import com.example.inno_user_service.dto.payment_card.PaymentCardRequest;
+import com.example.inno_user_service.dto.payment_card.PaymentCardResponse;
+import com.example.inno_user_service.service.PaymentCardService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("api/v1/cards")
+public class PaymentCardController {
+    
+    public PaymentCardService paymentCardService;
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public PaymentCardResponse getCard(@PathVariable Long id) {
+        return paymentCardService.findByIdOrThrow(id);
+    }
+
+    @GetMapping("/user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PaymentCardResponse> getUserCards(@PathVariable Long id) {
+        return paymentCardService.findAllByUserId(id);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Page<PaymentCardResponse> getCards(@PageableDefault Pageable pageable) {
+        return paymentCardService.findAll(pageable);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public PaymentCardResponse createCard(@RequestBody @Valid PaymentCardRequest request) {
+        return paymentCardService.createPaymentCard(request);
+    }
+
+    @PutMapping("/{id}")
+    public PaymentCardResponse updateCard(@PathVariable Long id, @RequestBody @Valid PaymentCardRequest request) {
+        return paymentCardService.updatePaymentCard(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteCard(@PathVariable Long id) {
+        paymentCardService.deletePaymentCard(id);
+    }
+}
