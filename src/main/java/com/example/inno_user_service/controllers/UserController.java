@@ -2,6 +2,7 @@ package com.example.inno_user_service.controllers;
 
 import com.example.inno_user_service.dto.user.UserRequest;
 import com.example.inno_user_service.dto.user.UserResponse;
+import com.example.inno_user_service.dto.user.UserWithCardsResponse;
 import com.example.inno_user_service.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse getUser(@PathVariable Long id) {
+    public UserWithCardsResponse getUser(@PathVariable Long id) {
         return userService.findByIdOrThrow(id);
     }
 

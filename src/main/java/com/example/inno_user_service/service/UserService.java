@@ -3,11 +3,15 @@ package com.example.inno_user_service.service;
 import com.example.inno_user_service.dao.UserDao;
 import com.example.inno_user_service.dto.user.UserRequest;
 import com.example.inno_user_service.dto.user.UserResponse;
+import com.example.inno_user_service.dto.user.UserWithCardsResponse;
 import com.example.inno_user_service.entity.User;
 import com.example.inno_user_service.exceptions.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,6 +27,7 @@ public class UserService {
     private final UserDao userDao;
     private final UserMapper mapper;
 
+
     public Page<UserResponse> findAll(Pageable pageable) {
         return userDao.findAll(pageable).map(mapper::toResponse);
     }
@@ -35,9 +40,10 @@ public class UserService {
         return userDao.findById(id);
     }
 
-    public UserResponse findByIdOrThrow(Long id) {
+    @Cacheable(value = "users", key = "#id")
+    public UserWithCardsResponse findByIdOrThrow(Long id) {
         Optional<User> byId = findById(id);
-        return byId.map(mapper::toResponse).orElseThrow(() ->
+        return byId.map(mapper::toResponseWithCards).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
     }
 
@@ -47,6 +53,7 @@ public class UserService {
         return mapper.toResponse(save);
     }
 
+    @CachePut(value = "users", key = "#result.id")
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
@@ -66,10 +73,12 @@ public class UserService {
         return mapper.toResponse(user);
     }
 
+    @CacheEvict(value = "users", key = "#id", beforeInvocation = true)
     public void deleteUser(Long id) {
         userDao.deleteById(id);
     }
 
+    @CachePut(value = "users", key = "#id")
     public UserResponse deactivateUser(Long id) {
         User user = findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
@@ -78,6 +87,7 @@ public class UserService {
         return mapper.toResponse(user);
     }
 
+    @CachePut(value = "users", key = "#id")
     public UserResponse activateUser(Long id) {
         User user = findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));

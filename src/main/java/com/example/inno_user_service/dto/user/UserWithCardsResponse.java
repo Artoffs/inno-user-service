@@ -1,15 +1,20 @@
 package com.example.inno_user_service.dto.user;
 
-import lombok.*;
+import com.example.inno_user_service.dto.payment_card.PaymentCardResponse;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
+@AllArgsConstructor
+public class UserWithCardsResponse {
 
     private Long id;
 
@@ -24,4 +29,6 @@ public class UserResponse {
     private Boolean active;
 
     private LocalDateTime createdAt;
+
+    private List<PaymentCardResponse> cards;
 }
