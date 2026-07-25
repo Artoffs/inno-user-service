@@ -6,7 +6,7 @@ import com.example.inno_user_service.dto.user.UserResponse;
 import com.example.inno_user_service.entity.User;
 import com.example.inno_user_service.exceptions.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.UserMapper;
-import com.example.inno_user_service.service.EmailAlreadyExistsException;
+import com.example.inno_user_service.exceptions.EmailAlreadyExistsException;
 import com.example.inno_user_service.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

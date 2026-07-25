@@ -5,6 +5,7 @@ import com.example.inno_user_service.dto.user.UserRequest;
 import com.example.inno_user_service.dto.user.UserResponse;
 import com.example.inno_user_service.dto.user.UserWithCardsResponse;
 import com.example.inno_user_service.entity.User;
+import com.example.inno_user_service.exceptions.EmailAlreadyExistsException;
 import com.example.inno_user_service.exceptions.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.UserMapper;
 import jakarta.transaction.Transactional;
@@ -48,6 +49,10 @@ public class UserService {
     }
 
     public UserResponse createUser(UserRequest request) {
+        if (userDao.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException("Пользователь с такой почтой уже зарегистрирован");
+        }
+
         User entity = mapper.toEntity(request);
         User save = userDao.save(entity);
         return mapper.toResponse(save);

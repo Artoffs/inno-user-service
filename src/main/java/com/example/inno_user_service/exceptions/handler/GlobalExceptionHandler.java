@@ -1,10 +1,7 @@
 package com.example.inno_user_service.exceptions.handler;
 
 
-import com.example.inno_user_service.exceptions.ErrorResponse;
-import com.example.inno_user_service.exceptions.MaxCardAmountException;
-import com.example.inno_user_service.exceptions.ResourceNotFoundException;
-import com.example.inno_user_service.exceptions.ValidationErrorResponse;
+import com.example.inno_user_service.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +18,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ErrorResponse handler(ResourceNotFoundException exception) {
+        return new ErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handler(EmailAlreadyExistsException exception) {
         return new ErrorResponse(exception.getMessage());
     }
 
