@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "#AZJAC-1-User-Service" ]
 
 jobs:
   build:
