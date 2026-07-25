@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:latest
         env:
           POSTGRES_DB: user_db
           POSTGRES_USER: postgres
@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
 
       redis:
-        image: redis:7
+        image: redis:latest
         ports:
           - 6379:6379
         options: >-
@@ -42,10 +42,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'zulu'
 
       - name: Cache SonarQube packages
@@ -89,11 +89,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: temurin
+          java-version: 21
+          distribution: 'zulu'
 
       - name: Build JAR
         run: mvn clean package -DskipTests
