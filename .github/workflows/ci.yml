@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: ["#AZJAC-1-User-Service"]
   pull_request:
     types: [opened, synchronize, reopened]
 
