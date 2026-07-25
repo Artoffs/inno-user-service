@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PaymentCardResponse {
 
+    private Long id;
+
     private Long userId;
 
     private String number;
