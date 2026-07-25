@@ -2,6 +2,7 @@ package com.example.inno_user_service.controllers;
 
 import com.example.inno_user_service.dto.payment_card.PaymentCardRequest;
 import com.example.inno_user_service.dto.payment_card.PaymentCardResponse;
+import com.example.inno_user_service.dto.user.UserResponse;
 import com.example.inno_user_service.service.PaymentCardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("api/v1/cards")
 public class PaymentCardController {
     
-    public PaymentCardService paymentCardService;
+    public final PaymentCardService paymentCardService;
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -50,8 +51,20 @@ public class PaymentCardController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCard(@PathVariable Long id) {
         paymentCardService.deletePaymentCard(id);
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    @ResponseStatus(HttpStatus.OK)
+    public PaymentCardResponse deactivateUser(@PathVariable Long id) {
+        return paymentCardService.deactivatePaymentCard(id);
+    }
+
+    @PatchMapping("/{id}/activate")
+    @ResponseStatus(HttpStatus.OK)
+    public PaymentCardResponse activateUser(@PathVariable Long id) {
+        return paymentCardService.activatePaymentCard(id);
     }
 }

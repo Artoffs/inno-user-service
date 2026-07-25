@@ -17,6 +17,7 @@ public interface PaymentCardMapper {
 
     List<PaymentCardResponse> toResponseList(List<PaymentCard> paymentCards);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", source = "user")
     @Mapping(target = "active", source = "request.active")
     PaymentCard toEntity(PaymentCardRequest request, User user);

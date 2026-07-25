@@ -56,7 +56,6 @@ public class PaymentCardService {
         }
 
         PaymentCard entity = mapper.toEntity(request, user);
-        user.addPaymentCard(entity);
 
         PaymentCard save = paymentCardDao.save(entity);
 
