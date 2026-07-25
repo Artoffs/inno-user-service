@@ -60,7 +60,7 @@ public class UserService {
 
         if (!user.getEmail().equals(request.getEmail())) {
             if (userDao.existsByEmail(request.getEmail())) {
-                throw new RuntimeException("Ты лох");
+                throw new EmailAlreadyExistsException("Пользователь с такой почтой уже зарегистрирован");
             }
             user.setEmail(request.getEmail());
         }
