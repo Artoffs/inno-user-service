@@ -1,4 +1,4 @@
-package com.example.inno_user_service.exceptions;
+package com.example.inno_user_service.exception;
 
 public class MaxCardAmountException extends RuntimeException {
     public MaxCardAmountException(Long id) {

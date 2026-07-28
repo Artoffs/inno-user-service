@@ -1,12 +1,13 @@
 package com.example.inno_user_service.service;
 
 import com.example.inno_user_service.dao.PaymentCardDao;
+import com.example.inno_user_service.dao.UserDao;
 import com.example.inno_user_service.dto.payment_card.PaymentCardRequest;
 import com.example.inno_user_service.dto.payment_card.PaymentCardResponse;
 import com.example.inno_user_service.entity.PaymentCard;
 import com.example.inno_user_service.entity.User;
-import com.example.inno_user_service.exceptions.MaxCardAmountException;
-import com.example.inno_user_service.exceptions.ResourceNotFoundException;
+import com.example.inno_user_service.exception.MaxCardAmountException;
+import com.example.inno_user_service.exception.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.PaymentCardMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PaymentCardService {
 
     private final PaymentCardDao paymentCardDao;
+    private final UserDao userDao;
     private final UserService userService;
     private final PaymentCardMapper mapper;
 
@@ -35,19 +36,17 @@ public class PaymentCardService {
     public Page<PaymentCardResponse> findAll(Pageable pageable, Specification<PaymentCard> specification) {
         return paymentCardDao.findAll(specification, pageable).map(mapper::toResponse);
     }
-
-    public Optional<PaymentCard> findById(Long id) {
-        return paymentCardDao.findById(id);
-    }
+    
 
     public PaymentCardResponse findByIdOrThrow(Long id) {
-        Optional<PaymentCard> byId = findById(id);
+        Optional<PaymentCard> byId = paymentCardDao.findById(id);
         return byId.map(mapper::toResponse).orElseThrow(() ->
-                new ResourceNotFoundException("Продукт", id));
+                new ResourceNotFoundException("Product", id));
     }
 
+    @Transactional
     public PaymentCardResponse createPaymentCard(PaymentCardRequest request) {
-        User user = userService.findById(request.getUserId()).orElseThrow(
+        User user = userDao.findById(request.getUserId()).orElseThrow(
                 () -> new ResourceNotFoundException("Пользователь", request.getUserId())
         );
 
@@ -62,13 +61,14 @@ public class PaymentCardService {
         return mapper.toResponse(save);
     }
 
+    @Transactional
     public PaymentCardResponse updatePaymentCard(Long id, PaymentCardRequest request) {
 
-        PaymentCard paymentCard = findById(id).orElseThrow(() ->
+        PaymentCard paymentCard = paymentCardDao.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Карта", id));
 
         if (!paymentCard.getUser().getId().equals(request.getUserId())) {
-            User user = userService.findById(request.getUserId()).orElseThrow(() ->
+            User user = userDao.findById(request.getUserId()).orElseThrow(() ->
                     new ResourceNotFoundException("Пользователь", request.getUserId()));
             paymentCard.setUser(user);
         }
@@ -93,7 +93,7 @@ public class PaymentCardService {
     }
 
     public PaymentCardResponse deactivatePaymentCard(Long id) {
-        PaymentCard paymentCard = findById(id).orElseThrow(() ->
+        PaymentCard paymentCard = paymentCardDao.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
 
         paymentCard.setActive(false);
@@ -101,7 +101,7 @@ public class PaymentCardService {
     }
 
     public PaymentCardResponse activatePaymentCard(Long id) {
-        PaymentCard paymentCard = findById(id).orElseThrow(() ->
+        PaymentCard paymentCard = paymentCardDao.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
 
         paymentCard.setActive(true);

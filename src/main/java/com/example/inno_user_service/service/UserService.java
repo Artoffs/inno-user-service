@@ -5,8 +5,8 @@ import com.example.inno_user_service.dto.user.UserRequest;
 import com.example.inno_user_service.dto.user.UserResponse;
 import com.example.inno_user_service.dto.user.UserWithCardsResponse;
 import com.example.inno_user_service.entity.User;
-import com.example.inno_user_service.exceptions.EmailAlreadyExistsException;
-import com.example.inno_user_service.exceptions.ResourceNotFoundException;
+import com.example.inno_user_service.exception.EmailAlreadyExistsException;
+import com.example.inno_user_service.exception.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 
     private final UserDao userDao;
@@ -37,20 +36,18 @@ public class UserService {
         return userDao.findAll(specification, pageable).map(mapper::toResponse);
     }
 
-    public Optional<User> findById(Long id) {
-        return userDao.findById(id);
-    }
 
     @Cacheable(value = "users", key = "#id")
     public UserWithCardsResponse findByIdOrThrow(Long id) {
-        Optional<User> byId = findById(id);
+        Optional<User> byId = userDao.findById(id);
         return byId.map(mapper::toResponseWithCards).orElseThrow(() ->
-                new ResourceNotFoundException("Пользователь", id));
+                new ResourceNotFoundException("User", id));
     }
 
+    @Transactional
     public UserResponse createUser(UserRequest request) {
         if (userDao.existsByEmail(request.getEmail())) {
-            throw new EmailAlreadyExistsException("Пользователь с такой почтой уже зарегистрирован");
+            throw new EmailAlreadyExistsException("User with this email already exists");
         }
 
         User entity = mapper.toEntity(request);
@@ -58,14 +55,15 @@ public class UserService {
         return mapper.toResponse(save);
     }
 
+    @Transactional
     @CachePut(value = "users", key = "#result.id")
     public UserResponse updateUser(Long id, UserRequest request) {
-        User user = findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Пользователь", id));
+        User user = userDao.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("User", id));
 
         if (!user.getEmail().equals(request.getEmail())) {
             if (userDao.existsByEmail(request.getEmail())) {
-                throw new EmailAlreadyExistsException("Пользователь с такой почтой уже зарегистрирован");
+                throw new EmailAlreadyExistsException("User with this email already exists");
             }
             user.setEmail(request.getEmail());
         }
@@ -85,8 +83,10 @@ public class UserService {
 
     @CachePut(value = "users", key = "#id")
     public UserResponse deactivateUser(Long id) {
-        User user = findById(id).orElseThrow(() ->
+        User user = userDao.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
+
+
 
         user.setActive(false);
         return mapper.toResponse(user);
@@ -94,7 +94,7 @@ public class UserService {
 
     @CachePut(value = "users", key = "#id")
     public UserResponse activateUser(Long id) {
-        User user = findById(id).orElseThrow(() ->
+        User user = userDao.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Пользователь", id));
 
         user.setActive(true);

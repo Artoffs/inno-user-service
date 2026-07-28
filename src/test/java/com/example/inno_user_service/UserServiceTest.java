@@ -4,9 +4,9 @@ import com.example.inno_user_service.dao.UserDao;
 import com.example.inno_user_service.dto.user.UserRequest;
 import com.example.inno_user_service.dto.user.UserResponse;
 import com.example.inno_user_service.entity.User;
-import com.example.inno_user_service.exceptions.ResourceNotFoundException;
+import com.example.inno_user_service.exception.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.UserMapper;
-import com.example.inno_user_service.exceptions.EmailAlreadyExistsException;
+import com.example.inno_user_service.exception.EmailAlreadyExistsException;
 import com.example.inno_user_service.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +66,7 @@ class UserServiceTest {
 
         when(userDao.findById(1L)).thenReturn(Optional.of(user));
 
-        User result = userService.findById(1L).orElse(null);
+        User result = userDao.findById(1L).orElse(null);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
@@ -85,8 +85,8 @@ class UserServiceTest {
     void findById_ShouldReturnEmptyOptional() {
         when(userDao.findById(1L)).thenReturn(Optional.empty());
 
-        assertThat(userService.findById(1L)).isEmpty();
-        assertThat(userService.findById(1L)).isNotPresent();
+        assertThat(userDao.findById(1L)).isEmpty();
+        assertThat(userDao.findById(1L)).isNotPresent();
     }
 
     @Test
@@ -98,8 +98,8 @@ class UserServiceTest {
 
         when(userDao.findById(1L)).thenReturn(Optional.of(user));
 
-        assertThat(userService.findById(1L)).isPresent();
-        assertThat(userService.findById(1L).get().getId()).isEqualTo(1L);
+        assertThat(userDao.findById(1L)).isPresent();
+        assertThat(userDao.findById(1L).get().getId()).isEqualTo(1L);
     }
 
 

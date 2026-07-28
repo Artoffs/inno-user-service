@@ -1,7 +1,7 @@
-package com.example.inno_user_service.exceptions.handler;
+package com.example.inno_user_service.exception.handler;
 
 
-import com.example.inno_user_service.exceptions.*;
+import com.example.inno_user_service.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

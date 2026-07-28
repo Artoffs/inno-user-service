@@ -1,13 +1,13 @@
 package com.example.inno_user_service;
 
 import com.example.inno_user_service.dao.PaymentCardDao;
+import com.example.inno_user_service.dao.UserDao;
 import com.example.inno_user_service.dto.payment_card.PaymentCardRequest;
 import com.example.inno_user_service.dto.payment_card.PaymentCardResponse;
-import com.example.inno_user_service.dto.user.UserResponse;
 import com.example.inno_user_service.entity.PaymentCard;
 import com.example.inno_user_service.entity.User;
-import com.example.inno_user_service.exceptions.MaxCardAmountException;
-import com.example.inno_user_service.exceptions.ResourceNotFoundException;
+import com.example.inno_user_service.exception.MaxCardAmountException;
+import com.example.inno_user_service.exception.ResourceNotFoundException;
 import com.example.inno_user_service.mapper.PaymentCardMapper;
 import com.example.inno_user_service.service.PaymentCardService;
 import com.example.inno_user_service.service.UserService;
@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.smartcardio.Card;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +37,8 @@ public class PaymentCardServiceTest {
 
     @Mock
     private UserService userService;
+
+    private UserDao userDao;
 
     @InjectMocks
     private PaymentCardService cardService;
@@ -62,7 +63,7 @@ public class PaymentCardServiceTest {
         when(mapper.toEntity(any(), any())).thenReturn(card);
         when(cardDao.save(any())).thenReturn(card);
         when(mapper.toResponse(any())).thenReturn(response);
-        when(userService.findById(request.getUserId())).thenReturn(Optional.of(user));
+        when(userDao.findById(request.getUserId())).thenReturn(Optional.of(user));
 
         PaymentCardResponse paymentCard = cardService.createPaymentCard(request);
 
@@ -78,7 +79,7 @@ public class PaymentCardServiceTest {
         request.setUserId(999L);
 
 
-        when(userService.findById(999L)).thenReturn(Optional.empty());
+        when(userDao.findById(999L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> cardService.createPaymentCard(request));
     }
@@ -92,7 +93,7 @@ public class PaymentCardServiceTest {
         PaymentCardRequest request = new PaymentCardRequest();
         request.setUserId(1L);
 
-        when(userService.findById(1L)).thenReturn(Optional.of(user));
+        when(userDao.findById(1L)).thenReturn(Optional.of(user));
         when(cardDao.countByUserId(1L)).thenReturn(5L);
 
         assertThrows(MaxCardAmountException.class, () -> cardService.createPaymentCard(request));
@@ -213,7 +214,7 @@ public class PaymentCardServiceTest {
         request.setUserId(2L);
 
         when(cardDao.findById(1L)).thenReturn(Optional.of(paymentCard));
-        when(userService.findById(2L)).thenReturn(Optional.empty());
+        when(userDao.findById(2L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> cardService.updatePaymentCard(1L, request));
     }
@@ -240,10 +241,8 @@ public class PaymentCardServiceTest {
 
     @Test
     void findByIdOrThrow_WhenCardNotFound_ShouldThrowResourceNotFoundException() {
-        // Подготовка
         when(cardDao.findById(999L)).thenReturn(Optional.empty());
 
-        // Проверка
         assertThrows(ResourceNotFoundException.class, () -> {
             cardService.findByIdOrThrow(999L);
         });

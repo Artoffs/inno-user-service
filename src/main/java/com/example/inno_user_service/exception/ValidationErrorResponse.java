@@ -1,4 +1,4 @@
-package com.example.inno_user_service.exceptions;
+package com.example.inno_user_service.exception;
 
 import java.time.LocalDateTime;
 import java.util.Map;
