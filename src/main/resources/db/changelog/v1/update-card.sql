@@ -1,0 +1,1 @@
+ALTER TABLE payment_cards ALTER COLUMN number TYPE VARCHAR(30);
